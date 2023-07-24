@@ -1,20 +1,25 @@
 import { IUserLogin, IUserRegister } from "@interfaces/auth/auth.interface";
 import { postRequest } from "utils/axios";
 
-const register = (userData: IUserRegister) => {
-  return postRequest("auth/register", userData);
+const register = async (userData: IUserRegister) => {
+  try {
+    const response = await postRequest("auth/register", userData)
+    return response;
+  } catch (error) {
+    console.log(error)
+  }
 };
 
 const login = async (userData: IUserLogin) => {
   const response = await postRequest("auth/login", userData);
-  if (response.data.accessToken) {
-    localStorage.setItem("user", JSON.stringify(response.data));
+  if (response.data.data.token) {
+    localStorage.setItem("user", JSON.stringify(response.data.data));
   }
-  return response.data;
+  return response.data.data;
 };
 
 const logout = () => {
-  localStorage.removeItem("user");
+  return localStorage.removeItem("user");
 };
 
 export default {

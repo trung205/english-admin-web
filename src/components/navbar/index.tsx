@@ -1,12 +1,19 @@
 import React from "react";
 
 import Link from "next/link";
-import { Navbar, Nav } from "react-bootstrap";
 import styles from "./Navbar.module.scss";
-
-import { Logo } from "@components";
+import { useAppDispatch } from "@redux/store";
+import { logout } from '../../redux/slices/auth';
+import AuthService from "src/services/auth.service";
+import {MENUS} from "../../../constants/menus"
 
 export const NavbarComponent: React.FC = ({ children }) => {
+  const dispatch = useAppDispatch();
+
+  const handleLogout = () => {
+    AuthService.logout();
+    dispatch(logout())
+  }
   return (
     <nav className={styles.navbar} id="sidebar-wrapper" role="navigation">
       <div className={styles.sidebar_header}>
@@ -18,29 +25,23 @@ export const NavbarComponent: React.FC = ({ children }) => {
         </Link>
       </div>
       <ul className={`nav sidebar-nav flex-column ${styles.sidebar_content}`}>
-        <li>
-          <Link href="/">
-            <div
-              className={`${styles.item_nav} d-flex align-items-center justify-content-center`}
-            >
-              <i className="fs-4 bi bi-speedometer"></i>
-              <span className="ms-1 fs-4 d-none d-md-inline">Home</span>
-            </div>
-          </Link>
-        </li>
-        <li>
-          <Link href="/posts/first-post">
-            <div
-              className={`${styles.item_nav} d-flex align-items-center justify-content-center`}
-            >
-              <i className="bi bi-table"></i>
-              <span className="ms-1 fs-4 d-none d-md-inline">Post</span>
-            </div>
-          </Link>
-        </li>
+        {MENUS.map(item => {
+          return (
+            <li>
+            <Link href={item.route}>
+              <div
+                className={`${styles.item_nav} d-flex align-items-center justify-content-center`}
+              >
+                <i className={`fs-4 ${item.icon}`}></i>
+                <span className="ms-1 fs-4 d-none d-md-inline">{item.name}</span>
+              </div>
+            </Link>
+          </li>
+          )
+        })}
       </ul>
       <div className={styles.sidebar_footer}>
-        <div className={`${styles.sidebar_footer_item} d-flex align-items-center justify-content-center`}>
+        <div className={`${styles.sidebar_footer_item} d-flex align-items-center justify-content-center`} onClick={handleLogout}>
           <i className="bi bi-box-arrow-in-left h4"></i>
           <span className="ms-1 fs-4 d-none d-md-inline">Logout</span>
         </div>

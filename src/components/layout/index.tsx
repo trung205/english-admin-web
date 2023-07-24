@@ -1,9 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavbarComponent } from "@components/navbar";
-import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
+import { Container} from "react-bootstrap";
+import { RootState } from "@redux/reducers";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
+import routes from "constants/routes";
 
 export const Layout: React.FC = ({ children }) => {
+  const router = useRouter();
+  const user = useSelector((state: RootState) => state.auth);
   const [isLogin, setIsLogin] = useState(false);
+  useEffect(() => {
+    if (!user.isLoggedIn) router.push(routes.auth.login);
+    setIsLogin(user.isLoggedIn)
+  }, [user])
   return (
     <>
       <Container fluid className="px-0">
