@@ -11,7 +11,8 @@
 }
 
 .sidebar_header {
-  height: 72px;
+  min-height: 65px;
+  max-height: 65px;
   color: #fff;
   text-align: center;
   border-bottom: 0.5px solid #f1f1f1;
@@ -31,6 +32,7 @@
 .navbar .sidebar_content li .item_nav i {
   flex: 1;
   text-align: center;
+  margin-bottom: unset;
 }
 .navbar .sidebar_content li .item_nav span {
   flex: 3;

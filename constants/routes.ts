@@ -5,7 +5,8 @@ const routes = {
   },
   private: {
     dashboard: "/posts/first-post",
-    home: "/"
+    home: "/",
+    users: "/users"
   }
 };
 

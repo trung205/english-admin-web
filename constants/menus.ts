@@ -1,9 +1,9 @@
 import routes from './routes'
 export const MENUS = [
     {
-        name: 'Home',
-        icon: 'bi bi-speedometer',
-        route: routes.private.home
+        name: 'Người dùng',
+        icon: 'bi bi-people-fill h4',
+        route: routes.private.users
     },
     {
         name: 'Post',

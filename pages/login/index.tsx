@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { useAppDispatch } from "@redux/store";
 import { loginSuccess } from "../../src/redux/slices/auth";
 import routes from "constants/routes";
-import styles from "./Login.module.scss";
+import styles from "../../src/styles/login/Login.module.scss";
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -30,7 +30,7 @@ const Login: React.FC = () => {
       let bodyUserLogin = { ...userState };
       let res = await AuthService.login(bodyUserLogin);
       dispatch(loginSuccess(res));
-      router.push(routes.private.dashboard);
+      router.push(routes.private.users);
     } catch (error) {
       console.log(error);
     }

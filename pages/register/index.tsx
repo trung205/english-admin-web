@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { registerSuccess, registerFail } from "../../src/redux/slices/auth";
 import { useAppDispatch } from "@redux/store";
 import routes from "constants/routes";
-import styles from "./Register.module.scss"
+import styles from "../../src/styles/register/Register.module.scss"
 
 const Register: React.FC = () => {
   const dispatch = useAppDispatch();

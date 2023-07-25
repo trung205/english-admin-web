@@ -5,7 +5,7 @@ import "bootstrap-icons/font/bootstrap-icons.min.css"
 import { AppProps } from "next/app";
 import { Provider } from "react-redux";
 import { Layout } from "../src/components/layout";
-import "../src/styles/globals.css";
+import "../src/styles/globals.scss";
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return (
