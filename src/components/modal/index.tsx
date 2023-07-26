@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button, Modal } from "react-bootstrap";
 
-const CustomModal = ({ showModal, onClose, title, body }: any) => {
+const CustomModal = ({ showModal, onClose, title, footer, children }: any) => {
   const [show, setShow] = useState(showModal);
 
   const handleClose = () => {
@@ -17,11 +17,12 @@ const CustomModal = ({ showModal, onClose, title, body }: any) => {
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>{body}</Modal.Body>
+      <Modal.Body>{children}</Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
+        {footer}
       </Modal.Footer>
     </Modal>
   );

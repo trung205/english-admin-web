@@ -4,7 +4,7 @@ const routes = {
     register: "/register",
   },
   private: {
-    dashboard: "/posts/first-post",
+    dashboard: "/lessons",
     home: "/",
     users: "/users"
   }

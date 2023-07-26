@@ -14,7 +14,7 @@ const Register: React.FC = () => {
     username: "",
     email: "",
     password: "",
-    password_confirmation: "",
+    // password_confirmation: "",
   });
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +28,7 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     try {
-      let bodyUserRegis = { ...userState };
+      let bodyUserRegis = { ...userState, role: 'admin' };
       await postRequest("auth/register", bodyUserRegis);
       dispatch(registerSuccess());
       router.push(routes.auth.login);
@@ -83,7 +83,7 @@ const Register: React.FC = () => {
                       onChange={handleChangeInput}
                     />
                   </div>
-                  <div className="form-outline form-white mb-4">
+                  {/* <div className="form-outline form-white mb-4">
                     <input
                       type="password"
                       id="typePasswordX"
@@ -92,7 +92,7 @@ const Register: React.FC = () => {
                       name="password_confirmation"
                       onChange={handleChangeInput}
                     />
-                  </div>
+                  </div> */}
 
                   <button
                     className="btn btn-outline-light btn-lg px-5"

@@ -1,4 +1,5 @@
 import axios from "axios";
+import AuthService from "src/services/auth.service";
 
 const axiosInstance = axios.create({
   baseURL: "http://localhost:3000",
@@ -11,6 +12,10 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
+    const user: any = JSON.parse(localStorage.getItem("user") || "{}") ;
+    if (user && user?.token) {
+      config.headers.Authorization = `Bearer ${user?.token}`;
+    }
     return config;
   },
   (error) => {
@@ -18,19 +23,26 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-axios.interceptors.response.use(
+axiosInstance.interceptors.response.use(
   function (response) {
     return response;
   },
   function (error) {
     if (error.response.status === 401) {
+      AuthService.logout();
     }
     return Promise.reject(error);
   }
 );
 
-export async function getRequest(endpoint: string) {
-  const response = await axiosInstance.get(`/${endpoint}`);
+export async function getRequest(endpoint: string, query?: any) {
+  let params: any = {};
+  if (query) {
+    for(let key in query ) {
+      if (query[key]) params[key] = query[key];
+    }
+  }
+  const response = await axiosInstance.get(`/${endpoint}`, {params});
   return response;
 }
 

@@ -27,7 +27,7 @@ export const NavbarComponent: React.FC = ({ children }) => {
       <ul className={`nav sidebar-nav flex-column ${styles.sidebar_content}`}>
         {MENUS.map(item => {
           return (
-            <li>
+            <li key={item.id}>
             <Link href={item.route}>
               <div
                 className={`${styles.item_nav} d-flex align-items-center justify-content-center`}
