@@ -1,45 +1,26 @@
 import React, { useState, useCallback, useEffect, useContext } from "react";
-import styles from "../../src/styles/lessons/Lessons.module.scss";
+import styles from "../../../src/styles/listenings/Listenings.module.scss";
 import DataTable from "react-data-table-component";
 import Paper from "@mui/material/Paper";
 import SortIcon from "@mui/icons-material/ArrowDownward";
 import { ILessonFilter, LessonType } from "@interfaces/lesson/lesson.interface";
-import lessonService from "src/services/lesson.service";
 import { ConfirmContext } from "@definitions/confirm-context";
 import { Button, Form } from "react-bootstrap";
 import CustomModal from "@components/modal";
 import { useRouter } from "next/router";
-import routes from "constants/routes";
+import { IListeningFilter } from "@interfaces/listening/listening.interface";
+import listeningService from "src/services/listening.service";
 
-const listType = [
-  {
-    name: "Readings",
-    type: LessonType.READING,
-  },
-  {
-    name: "Listenings",
-    type: LessonType.LISTENING,
-  },
-  {
-    name: "Grammars",
-    type: LessonType.GRAMMAR,
-  },
-];
-
-const routesLesson = {
-  LISTENING: routes.private.listenings,
-  READING: routes.private.readings,
-  GRAMMAR: routes.private.grammars,
-};
-
-const Lessons: React.FC = () => {
+const Listenings: React.FC = () => {
   const router = useRouter();
+  const lessonId = router.query.listeningId as string;
+  console.log(lessonId);
   const [pending, setPending] = useState(true);
-  const [query, setQuery] = useState<ILessonFilter>({
-    type: LessonType.READING,
+  const [query, setQuery] = useState<IListeningFilter>({
+    lesson: "",
   });
-  const [lessons, setLessons] = useState<any>([]);
-  const [lessonInfo, setLessonInfo] = useState<any>();
+  const [listenings, setListenings] = useState<any>([]);
+  const [listeningInfo, setListeningInfo] = useState<any>();
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const { handleShowConfirm }: any = useContext(ConfirmContext);
@@ -49,36 +30,42 @@ const Lessons: React.FC = () => {
   };
 
   const handleCloseModal = () => {
-    setLessonInfo(null);
+    setListeningInfo(null);
     setShowModal(false);
   };
 
-  const handleChangeType = (item: any) => {
-    setQuery({ ...query, type: item.type });
-  };
+  //   const handleChangeType = (item: any) => {
+  //     setQuery({ ...query, type: item.type });
+  //   };
 
-  const fetchDataLesson = useCallback(async () => {
-    setPending(true);
-    const lessons = await lessonService.getAll(query);
-    setLessons(lessons.data.data.data);
-    setPending(false);
+  const fetchDataListening = useCallback(async () => {
+    if (query.lesson) {
+      setPending(true);
+      const listenings = await listeningService.getAll(query);
+      setListenings(listenings.data.data.data);
+      setPending(false);
+    }
   }, [query]);
 
   useEffect(() => {
-    fetchDataLesson().catch(console.error);
-  }, [fetchDataLesson]);
+    fetchDataListening().catch(console.error);
+  }, [fetchDataListening]);
+
+  useEffect(() => {
+    setQuery({ ...query, lesson: lessonId });
+  }, [router]);
 
   const handleDeleteBtn = (e: any, cell: any) => {
     handleShowConfirm("Bạn có muốn tiếp tục không?", function () {
-      submitDeleteLesson(cell);
+      submitDeleteListening(cell);
     });
   };
 
-  const submitDeleteLesson = async (lesson: any) => {
+  const submitDeleteListening = async (listening: any) => {
     try {
       setPending(true);
-      await lessonService.removeLesson(lesson._id);
-      fetchDataLesson();
+      await listeningService.removeListening(listening._id);
+      fetchDataListening();
     } catch (error) {
       console.log(error);
     } finally {
@@ -88,44 +75,40 @@ const Lessons: React.FC = () => {
 
   const handleEditBtn = (e: any, cell: any) => {
     setIsEdit(true);
-    setLessonInfo(cell);
+    setListeningInfo(cell);
     handleShowModal();
   };
 
-  const handleInputEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, name } = e.target;
-    setLessonInfo((prevValues: any) => ({
-      ...prevValues,
-      [name]: value,
-    }));
-  };
+  //   const handleInputEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //     const { value, name } = e.target;
+  //     setLessonInfo((prevValues: any) => ({
+  //       ...prevValues,
+  //       [name]: value,
+  //     }));
+  //   };
 
-  const handleSaveLesson = async () => {
-    try {
-      if (isEdit) {
-        await lessonService.updateLesson(lessonInfo._id, {
-          name: lessonInfo.name,
-          title: lessonInfo.title,
-        });
-      } else {
-        let body = { ...lessonInfo, type: query.type };
-        await lessonService.createLesson(body);
-      }
-      fetchDataLesson();
-      handleCloseModal();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //   const handleSaveLesson = async () => {
+  //     try {
+  //       if (isEdit) {
+  //         await lessonService.updateLesson(lessonInfo._id, {
+  //           name: lessonInfo.name,
+  //           title: lessonInfo.title,
+  //         });
+  //       } else {
+  //         let body = { ...lessonInfo, type: query.type };
+  //         await lessonService.createLesson(body);
+  //       }
+  //       fetchDataLesson();
+  //       handleCloseModal();
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
 
-  const handleCreateBtn = () => {
-    setIsEdit(false);
-    handleShowModal();
-  };
-
-  const handleRowClicked = (row: any, event: any) => {
-    if (query.type) router.push(routesLesson[query.type](row._id));
-  };
+  //   const handleCreateBtn = () => {
+  //     setIsEdit(false);
+  //     handleShowModal();
+  //   };
 
   const columns = [
     {
@@ -133,13 +116,13 @@ const Lessons: React.FC = () => {
       selector: (row: any, index: any) => index + 1,
     },
     {
-      name: "Tên bài học",
-      selector: "name",
+      name: "Câu hỏi",
+      selector: "question",
       sortable: true,
     },
     {
-      name: "Tiêu đề bài học",
-      selector: "title",
+      name: "Câu trả lời",
+      selector: "answer",
       sortable: true,
     },
     {
@@ -172,13 +155,13 @@ const Lessons: React.FC = () => {
     },
   ];
 
-  const renderBtnSave = () => {
-    return (
-      <Button variant="primary" onClick={handleSaveLesson}>
-        Lưu
-      </Button>
-    );
-  };
+  //   const renderBtnSave = () => {
+  //     return (
+  //       <Button variant="primary" onClick={handleSaveLesson}>
+  //         Lưu
+  //       </Button>
+  //     );
+  //   };
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -201,44 +184,24 @@ const Lessons: React.FC = () => {
           <div>
             <button
               className={`${styles.btn_create} btn`}
-              onClick={handleCreateBtn}
+              //   onClick={handleCreateBtn}
             >
-              Thêm bài học<i className="bi bi-plus-square-dotted"></i>
+              Thêm câu hỏi<i className="bi bi-plus-square-dotted"></i>
             </button>
           </div>
-        </div>
-        <div>
-          <ul className={styles.list_item}>
-            {listType.map((item) => {
-              return (
-                <li
-                  key={item.name}
-                  className={`${
-                    query.type === item.type ? styles.active : ""
-                  } `}
-                  onClick={() => handleChangeType(item)}
-                >
-                  {item.name}
-                </li>
-              );
-            })}
-          </ul>
         </div>
       </div>
       <Paper className={styles.data_table}>
         <DataTable
           columns={columns}
-          data={lessons}
-          defaultSortField="name"
+          data={listenings}
+          defaultSortField="question"
           sortIcon={<SortIcon />}
           pagination
           progressPending={pending}
-          onRowClicked={handleRowClicked}
-          highlightOnHover
-          pointerOnHover
         />
       </Paper>
-      <CustomModal
+      {/* <CustomModal
         showModal={showModal}
         onClose={handleCloseModal}
         title={isEdit ? "Chỉnh sửa thông tin bài học" : "Thông tin bài học"}
@@ -266,9 +229,9 @@ const Lessons: React.FC = () => {
             />
           </Form.Group>
         </Form>
-      </CustomModal>
+      </CustomModal> */}
     </div>
   );
 };
 
-export default Lessons;
+export default Listenings;

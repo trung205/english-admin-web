@@ -20,7 +20,7 @@ const CustomModal = ({ showModal, onClose, title, footer, children }: any) => {
       <Modal.Body>{children}</Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
-          Close
+          Hủy
         </Button>
         {footer}
       </Modal.Footer>

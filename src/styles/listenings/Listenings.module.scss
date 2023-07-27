@@ -1,0 +1,42 @@
+.tab_bar{
+  .header_tab_bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+
+    .search_group {
+      align-items: center;
+      width: 30%;
+      max-width: 465px;
+      height: 46px;
+      background-color: white;
+      border-radius: 20px;
+      border: 1px #E9E9EA solid;
+      padding: 0 40px 0 30px;
+      margin-bottom: unset !important;
+
+      input {
+        border: 0px;
+        background-color: transparent;
+        padding-left: 20px;
+      }
+
+      i {
+        margin-bottom: unset;
+      }
+    }
+
+    .btn_create {
+      width: 154px;
+      height: 47px;
+      background-color: #B8DAFF;
+      color: #112A46;
+      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+
+      i {
+        margin-left: 10px;
+      }
+    }
+  }
+}

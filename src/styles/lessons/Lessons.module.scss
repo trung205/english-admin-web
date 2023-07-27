@@ -1,10 +1,6 @@
-// .data_table {
-//   width: 95%;
-//   margin: 0 auto;
-// }
-
 .tab_bar{
   ul {
+    padding: 1rem 0;
     li {
       display: inline;
       font-size: 1.2rem;
@@ -50,6 +46,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 1rem 0;
+
     .search_group {
       align-items: center;
       width: 30%;
@@ -59,6 +57,7 @@
       border-radius: 20px;
       border: 1px #E9E9EA solid;
       padding: 0 40px 0 30px;
+      margin-bottom: unset !important;
 
       input {
         border: 0px;

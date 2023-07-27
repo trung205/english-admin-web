@@ -36,12 +36,14 @@ axiosInstance.interceptors.response.use(
 );
 
 export async function getRequest(endpoint: string, query?: any) {
+  console.log(query)
   let params: any = {};
   if (query) {
     for(let key in query ) {
       if (query[key]) params[key] = query[key];
     }
   }
+  console.log(params, "params getRequest")
   const response = await axiosInstance.get(`/${endpoint}`, {params});
   return response;
 }
