@@ -1,4 +1,4 @@
-import { IListeningFilter } from "@interfaces/listening/listening.interface";
+import { IListeningFilter, IListeningInfo } from "@interfaces/listening/listening.interface";
 import {
   deleteRequest,
   getRequest,
@@ -15,7 +15,7 @@ const createListening = async (body: any) => {
   const response = await postRequest(`listening`, body);
   return response;
 };
-const updateListening = async (id: string, body: any) => {
+const updateListening = async (id: string, body: IListeningInfo) => {
   const response = await patchRequest(`listening/${id}`, body);
   return response;
 };

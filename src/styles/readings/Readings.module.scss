@@ -41,23 +41,3 @@
   }
 }
 
-.btn_add_word {
-  background-color: #80ed99;
-  color: #081c15;
-  padding: 5px 10px;
-  cursor: pointer;
-  text-align: right;
-}
-.input_group_word {
-  display: flex;
-  align-items: center;
-
-  .btn_remove_word {
-    background-color: #ff9b54;
-    color: #721300;
-    padding: 0px 5px;
-    padding-top: 3px;
-    cursor: pointer;
-    margin-left: 10px;
-  }
-}

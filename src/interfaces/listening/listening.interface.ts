@@ -9,3 +9,12 @@ export interface IListeningFilter extends IFilterBase {
   type?: ListeningType;
   lesson: string;
 }
+
+export class IListeningInfo {
+  type?: ListeningType;
+  lesson?: string;
+  answer?: string;
+  question?: string;
+  words?: Array<string>;
+  rawAnswer?: string;
+}

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useContext } from "react";
-import styles from "../../../src/styles/listenings/Listenings.module.scss";
+import styles from "../../../src/styles/readings/Readings.module.scss";
 import DataTable from "react-data-table-component";
 import Paper from "@mui/material/Paper";
 import SortIcon from "@mui/icons-material/ArrowDownward";
@@ -8,26 +8,26 @@ import { ConfirmContext } from "@definitions/confirm-context";
 import { Button, Form } from "react-bootstrap";
 import CustomModal from "@components/modal";
 import { useRouter } from "next/router";
-import {
-  IListeningFilter,
-  IListeningInfo,
-  ListeningType,
-} from "@interfaces/listening/listening.interface";
-import listeningService from "src/services/listening.service";
 import { cleanObject } from "utils/functions";
+import {
+  IReadingFilter,
+  IReadingInfo,
+} from "@interfaces/reading/reading.interface";
+import readingService from "src/services/reading.service";
+import ImageUpload from "@components/image-upload";
 
-const Listenings: React.FC = () => {
+const Readings: React.FC = () => {
   const router = useRouter();
-  const lessonId = router.query.listeningId as string;
+  const lessonId = router.query.readingId as string;
   const [pending, setPending] = useState(true);
-  const [query, setQuery] = useState<IListeningFilter>({
+  const [query, setQuery] = useState<IReadingFilter>({
     lesson: "",
   });
-  const [listenings, setListenings] = useState<any>([]);
-  const [listeningInfo, setListeningInfo] = useState<any>();
+  const [readings, setReadings] = useState<any>([]);
+  const [readingInfo, setReadingInfo] = useState<any>();
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [listWord, setListWord] = useState<string[]>([]);
+  const [imageURL, setImageURL] = useState<string | null>(null);
   const { handleShowConfirm }: any = useContext(ConfirmContext);
 
   const handleShowModal = () => {
@@ -35,7 +35,7 @@ const Listenings: React.FC = () => {
   };
 
   const handleCloseModal = () => {
-    setListeningInfo(null);
+    setReadingInfo(null);
     setShowModal(false);
   };
 
@@ -43,18 +43,18 @@ const Listenings: React.FC = () => {
   //     setQuery({ ...query, type: item.type });
   //   };
 
-  const fetchDataListening = useCallback(async () => {
+  const fetchDataReading = useCallback(async () => {
     if (query.lesson) {
       setPending(true);
-      const listenings = await listeningService.getAll(query);
-      setListenings(listenings.data.data.data);
+      const readings = await readingService.getAll(query);
+      setReadings(readings.data.data.data);
       setPending(false);
     }
   }, [query]);
 
   useEffect(() => {
-    fetchDataListening().catch(console.error);
-  }, [fetchDataListening]);
+    fetchDataReading().catch(console.error);
+  }, [fetchDataReading]);
 
   useEffect(() => {
     setQuery({ ...query, lesson: lessonId });
@@ -62,15 +62,15 @@ const Listenings: React.FC = () => {
 
   const handleDeleteBtn = (e: any, cell: any) => {
     handleShowConfirm("Bạn có muốn tiếp tục không?", function () {
-      submitDeleteListening(cell);
+      submitDeleteReading(cell);
     });
   };
 
-  const submitDeleteListening = async (listening: any) => {
+  const submitDeleteReading = async (listening: any) => {
     try {
       setPending(true);
-      await listeningService.removeListening(listening._id);
-      fetchDataListening();
+      await readingService.removeReading(listening._id);
+      fetchDataReading();
     } catch (error) {
       console.log(error);
     } finally {
@@ -80,60 +80,32 @@ const Listenings: React.FC = () => {
 
   const handleEditBtn = (e: any, cell: any) => {
     setIsEdit(true);
-    setListeningInfo(cell);
+    setReadingInfo(cell);
     handleShowModal();
   };
 
   const handleInputInfo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
-    setListeningInfo((prevValues: any) => ({
+    setReadingInfo((prevValues: any) => ({
       ...prevValues,
       [name]: value,
     }));
   };
 
-  const handleInputWord = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    const { value, name } = e.target;
-    const newListWord: string[] = [...listWord];
-
-    newListWord[index] = value;
-    setListWord(newListWord);
-  };
-
-  const handleAddWordBtn = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-    const newListWord: string[] = [...listWord];
-    newListWord.push("");
-    setListWord(newListWord);
-  };
-
-  const handleRemoveWordBtn = (
-    e: React.MouseEvent<HTMLElement>,
-    index: number
-  ) => {
-    e.preventDefault();
-    const newListWord: string[] = [...listWord];
-    newListWord.splice(index, 1);
-    setListWord(newListWord);
-  };
-
-  const handleSaveListening = async () => {
+  const handleSaveReading = async () => {
     try {
-      const cleanedObject = cleanObject<IListeningInfo>(
-        { ...listeningInfo },
-        new IListeningInfo()
+      const cleanedObject = cleanObject<IReadingInfo>(
+        { ...readingInfo },
+        new IReadingInfo()
       );
-      let body = { ...cleanedObject, words: listWord };
+      let body = { ...cleanedObject };
       if (isEdit) {
-        await listeningService.updateListening(listeningInfo._id, body);
+        await readingService.updateReading(readingInfo._id, body);
       } else {
-        body = {...body, lesson: lessonId, type: ListeningType.SELECT_WORD}
-        await listeningService.createListening(body);
+        body = { ...body, lesson: lessonId };
+        await readingService.createReading(body);
       }
-      fetchDataListening();
+      fetchDataReading();
       handleCloseModal();
     } catch (error) {
       console.log(error);
@@ -141,10 +113,14 @@ const Listenings: React.FC = () => {
   };
 
   const handleCreateBtn = () => {
-    setListeningInfo({});
-    setListWord([]);
+    setReadingInfo({});
     setIsEdit(false);
     handleShowModal();
+  };
+
+  const handleImageUpload = (url: any) => {
+    setImageURL(url);
+    console.log(url, "handleImageUpload");
   };
 
   const columns = [
@@ -153,13 +129,18 @@ const Listenings: React.FC = () => {
       selector: (row: any, index: any) => index + 1,
     },
     {
-      name: "Câu hỏi",
-      selector: "question",
+      name: "Từ vựng",
+      selector: "word",
       sortable: true,
     },
     {
-      name: "Câu trả lời",
-      selector: "answer",
+      name: "Ý nghĩa",
+      selector: "translateWord",
+      sortable: true,
+    },
+    {
+      name: "Phát âm",
+      selector: "pronunciation",
       sortable: true,
     },
     {
@@ -194,7 +175,7 @@ const Listenings: React.FC = () => {
 
   const renderBtnSave = () => {
     return (
-      <Button variant="primary" onClick={handleSaveListening}>
+      <Button variant="primary" onClick={handleSaveReading}>
         Lưu
       </Button>
     );
@@ -231,7 +212,7 @@ const Listenings: React.FC = () => {
       <Paper className={styles.data_table}>
         <DataTable
           columns={columns}
-          data={listenings}
+          data={readings}
           defaultSortField="question"
           sortIcon={<SortIcon />}
           pagination
@@ -246,75 +227,43 @@ const Listenings: React.FC = () => {
       >
         <Form>
           <Form.Group controlId="formName">
-            <Form.Label>Câu hỏi</Form.Label>
+            <Form.Label>Từ vựng</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Nhập câu hỏi"
-              defaultValue={listeningInfo?.question}
-              name="question"
+              placeholder="Nhập từ vựng"
+              defaultValue={readingInfo?.word}
+              name="word"
               onInput={handleInputInfo}
             />
           </Form.Group>
           <Form.Group controlId="formEmail">
-            <Form.Label>Đáp án</Form.Label>
+            <Form.Label>Nghĩa từ vựng</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Nhập đáp án"
-              defaultValue={listeningInfo?.answer}
-              name="answer"
+              placeholder="Nhập nghĩa từ vựng"
+              defaultValue={readingInfo?.translateWord}
+              name="translateWord"
               onInput={handleInputInfo}
             />
           </Form.Group>
           <Form.Group controlId="formEmail">
-            <Form.Label>Đáp án đầy đủ</Form.Label>
+            <Form.Label>Cách phát âm</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Nhập đáp án đầy đủ"
-              defaultValue={listeningInfo?.rawAnswer}
-              name="rawAnswer"
+              placeholder="Nhập cách phát âm"
+              defaultValue={readingInfo?.pronunciation}
+              name="pronunciation"
               onInput={handleInputInfo}
             />
           </Form.Group>
-          <Form.Group controlId="formEmail">
-            <Form.Label>Lựa chọn</Form.Label>
-            {listWord.map((item, index) => {
-              return (
-                <div className={`${styles.input_group_word} mb-3`}>
-                  <Form.Control
-                    type="text"
-                    placeholder="Nhập lựa chọn"
-                    value={listWord[index]}
-                    name="word"
-                    onInput={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleInputWord(e, index)
-                    }
-                  />
-                  <button
-                    className={`${styles.btn_remove_word} btn`}
-                    onClick={(e: React.MouseEvent<HTMLElement>) => {
-                      handleRemoveWordBtn(e, index);
-                    }}
-                  >
-                    <i className="bi bi-dash h4"></i>
-                  </button>
-                </div>
-              );
-            })}
-            {listWord.length < 4 && (
-              <div className="d-flex justify-content-end mt-2">
-                <button
-                  className={`${styles.btn_add_word} btn`}
-                  onClick={handleAddWordBtn}
-                >
-                  <i className="bi bi-plus h4"></i>
-                </button>
-              </div>
-            )}
-          </Form.Group>
+          <div>
+            {imageURL && <img src={imageURL} alt="Uploaded" />}
+            <ImageUpload onImageUpload={handleImageUpload} />
+          </div>
         </Form>
       </CustomModal>
     </div>
   );
 };
 
-export default Listenings;
+export default Readings;
