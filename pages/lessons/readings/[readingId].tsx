@@ -27,7 +27,7 @@ const Readings: React.FC = () => {
   const [readingInfo, setReadingInfo] = useState<any>();
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [imageURL, setImageURL] = useState<string | null>(null);
+  const [imageURL, setImageURL] = useState<string>();
   const { handleShowConfirm }: any = useContext(ConfirmContext);
 
   const handleShowModal = () => {
@@ -92,13 +92,15 @@ const Readings: React.FC = () => {
     }));
   };
 
+
+
   const handleSaveReading = async () => {
     try {
       const cleanedObject = cleanObject<IReadingInfo>(
         { ...readingInfo },
         new IReadingInfo()
       );
-      let body = { ...cleanedObject };
+      let body = { ...cleanedObject, image: imageURL };
       if (isEdit) {
         await readingService.updateReading(readingInfo._id, body);
       } else {
@@ -256,10 +258,11 @@ const Readings: React.FC = () => {
               onInput={handleInputInfo}
             />
           </Form.Group>
-          <div>
-            {imageURL && <img src={imageURL} alt="Uploaded" />}
+          
+          <Form.Group>
+            <Form.Label>Hình ảnh</Form.Label>
             <ImageUpload onImageUpload={handleImageUpload} />
-          </div>
+          </Form.Group>
         </Form>
       </CustomModal>
     </div>

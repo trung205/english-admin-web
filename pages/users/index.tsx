@@ -132,36 +132,6 @@ const Users: React.FC = () => {
   };
   return (
     <div className="d-flex flex-column min-vh-100 mt-3">
-      <div className={styles.tab_bar}>
-        <div className={styles.header_tab_bar}>
-          <div className={`input-group mb-3 ${styles.search_group}`}>
-            <div className="input-group-prepend">
-              <i className="bi bi-search h5"></i>
-            </div>
-            <input
-              type="text"
-              className="form-control"
-              aria-label="Amount (to the nearest dollar)"
-              placeholder="Tìm kiếm ..."
-            />
-            <div className="input-group-append">
-              <i className="bi bi-filter h4"></i>
-            </div>
-          </div>
-          <div>
-            <button className={`${styles.btn_create} btn`}>
-            Thêm bài học<i className="bi bi-plus-square-dotted"></i> 
-            </button>
-          </div>
-        </div>
-        <div>
-          <ul className={styles.list_item}>
-            <li className={styles.active}>Readings</li>
-            <li>Listenings</li>
-            <li>Grammars</li>
-          </ul>
-        </div>
-      </div>
       <Paper className={styles.data_table}>
         <DataTable
           columns={columns}

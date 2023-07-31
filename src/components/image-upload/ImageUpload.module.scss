@@ -1,0 +1,309 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: #eee8f8;
+}
+
+.variants > div {
+  margin-right: 5px;
+}
+
+.variants > div:last-of-type {
+  margin-right: 0;
+}
+
+.file {
+  position: relative;
+  display: flex;
+    justify-content: space-between;
+  align-items: center;
+}
+
+.file > input[type="file"] {
+  display: none;
+}
+
+.file > label {
+  font-size: 1rem;
+  font-weight: 300;
+  cursor: pointer;
+  outline: 0;
+  user-select: none;
+  border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);
+  border-style: solid;
+  border-radius: 4px;
+  border-width: 1px;
+  background-color: hsl(0, 0%, 100%);
+  color: hsl(0, 0%, 29%);
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.file > label:hover {
+  border-color: hsl(0, 0%, 21%);
+}
+
+.file > label:active {
+  background-color: hsl(0, 0%, 96%);
+}
+
+.file > label > i {
+  padding-right: 5px;
+}
+
+.file--upload > label {
+  color: hsl(204, 86%, 53%);
+  border-color: hsl(204, 86%, 53%);
+}
+
+.file--upload > label:hover {
+  border-color: hsl(204, 86%, 53%);
+  background-color: hsl(204, 86%, 96%);
+}
+
+.file--upload > label:active {
+  background-color: hsl(204, 86%, 91%);
+}
+
+.file--uploading > label {
+  color: hsl(48, 100%, 67%);
+  border-color: hsl(48, 100%, 67%);
+}
+
+.file--uploading > label > i {
+  animation: pulse 5s infinite;
+}
+
+.file--uploading > label:hover {
+  border-color: hsl(48, 100%, 67%);
+  background-color: hsl(48, 100%, 96%);
+}
+
+.file--uploading > label:active {
+  background-color: hsl(48, 100%, 91%);
+}
+
+.file--success > label {
+  color: hsl(141, 71%, 48%);
+  border-color: hsl(141, 71%, 48%);
+}
+
+.file--success > label:hover {
+  border-color: hsl(141, 71%, 48%);
+  background-color: hsl(141, 71%, 96%);
+}
+
+.file--success > label:active {
+  background-color: hsl(141, 71%, 91%);
+}
+
+.file--danger > label {
+  color: hsl(348, 100%, 61%);
+  border-color: hsl(348, 100%, 61%);
+}
+
+.file--danger > label:hover {
+  border-color: hsl(348, 100%, 61%);
+  background-color: hsl(348, 100%, 96%);
+}
+
+.file--danger > label:active {
+  background-color: hsl(348, 100%, 91%);
+}
+
+.file--disabled {
+  cursor: not-allowed;
+}
+
+.file--disabled > label {
+  border-color: #e6e7ef;
+  color: #e6e7ef;
+  pointer-events: none;
+}
+
+.file_block {
+  color: #f7fff7;
+  background-color: #7b2cbf;
+  transition: all 1s;
+  width: 60%;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0 15px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+}
+.file_info {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+}
+.file_icon {
+  margin-right: 10px;
+}
+.file_name,
+.file_size {
+  padding: 0 3px;
+}
+.remove_file_icon {
+  cursor: pointer;
+}
+
+.button_wrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+	width: 22rem;
+	// height: 5rem;
+	height: 80px;
+	border-radius: 10rem;
+	background-color: black;
+	font-size: 2rem;
+	color: white;
+	display: flex;
+	border: 6px solid black;
+	letter-spacing: 0.25em;
+	font-weight: 200;
+	overflow: hidden;
+	box-shadow: 0 5px 10px 1px rgba(0, 0, 0, 0.25);
+	user-select: none;
+	cursor: pointer;
+	transition: 300ms;
+  scale: 0.6;
+}
+
+.button_wrapper:hover {
+	transform: scale(110%);
+}
+
+.button_wrapper::before {
+	content: "LOADING";
+	position: absolute;
+	background-color: white;
+	height: 5rem;
+	width: 5rem; /* 22REM */
+	color: black;
+	display: flex;
+	border-radius: 10rem;
+	align-items: center;
+	overflow: hidden;
+	padding-left: 2rem;
+	box-sizing: border-box;
+}
+
+.loading.button_wrapper::before {
+	animation: reveal 1s ease-in-out 300ms forwards;
+}
+.done.button_wrapper::before {
+	right: 0;
+	width: 22rem;
+	animation: hideLoad 1s ease-in-out 50ms forwards;
+}
+
+.icon {
+	position: absolute;
+	display: flex;
+	overflow: hidden;
+	width: 5rem;
+	height: 5rem;
+	border-radius: 100%;
+	background-color: white;
+	color: black;
+}
+
+.icon > svg {
+	padding: 1.5rem;
+	transition: 300ms;
+}
+
+.loading.button_wrapper > .icon {
+	animation: loadIcon 1s ease-in-out 300ms forwards;
+}
+
+.loading.button_wrapper > .icon > svg {
+	transform: rotatez(-90deg);
+}
+
+.button_wrapper::after {
+	content: "START";
+	height: 100%;
+	width: 22rem;
+	border-radius: 10rem;
+	display: flex;
+	align-items: center;
+	padding-left: 6rem;
+}
+
+.done.button_wrapper::after {
+	content: "DONE";
+	padding-left: 2.5rem;
+}
+
+@keyframes loadIcon {
+	from {
+		transform: translatex(0);
+	}
+	to {
+		transform: translatex(16.2rem);
+	}
+}
+
+@keyframes reveal {
+	0% {
+		width: 5rem;
+	}
+
+	99.99% {
+		left: 0;
+	}
+	100% {
+		left: unset;
+		right: 0;
+		width: 22rem;
+	}
+}
+
+@keyframes hideLoad {
+	0% {
+		width: 22rem;
+	}
+	100% {
+		width: 5rem;
+	}
+}
+
+@media screen and (max-width: 500px) {
+	.button_wrapper {
+		transform: scale(80%);
+	}
+
+	.button_wrapper:hover {
+		transform: scale(90%);
+	}
+}
+
+@keyframes pulse {
+  0% {
+    color: hsl(48, 100%, 67%);
+  }
+  50% {
+    color: hsl(48, 100%, 38%);
+  }
+  100% {
+    color: hsl(48, 100%, 67%);
+  }
+}
+
+.circle_progress {
+  transform: translateX(-3.5rem);
+}

@@ -5,7 +5,7 @@ import { RootState } from "@redux/reducers";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import routes from "constants/routes";
-import styles from "./Layout.module.scss"
+import styles from "./Layout.module.scss";
 import { Header } from "@components/header";
 
 export const Layout: React.FC = ({ children }) => {
@@ -13,7 +13,12 @@ export const Layout: React.FC = ({ children }) => {
   const user = useSelector((state: RootState) => state.auth);
   const [isLogin, setIsLogin] = useState(false);
   useEffect(() => {
-    if (!user.isLoggedIn) router.push(routes.auth.login);
+    if (!user.isLoggedIn) {
+      router.push(routes.auth.login);
+    }
+    // } else {
+    //   router.push(routes.private.users);
+    // }
     setIsLogin(user.isLoggedIn);
   }, [user]);
   return (
@@ -25,9 +30,13 @@ export const Layout: React.FC = ({ children }) => {
               <div>
                 <NavbarComponent />
               </div>
-              <div className={`w-100 overflow-hidden vh-100 ${styles.layout_right}`}>
-                <Header/>
-                <main className={`w-100 overflow-auto ${styles.right_content}`}>{children}</main>
+              <div
+                className={`w-100 overflow-hidden vh-100 ${styles.layout_right}`}
+              >
+                <Header />
+                <main className={`w-100 overflow-auto ${styles.right_content}`}>
+                  {children}
+                </main>
               </div>
             </>
           ) : (
