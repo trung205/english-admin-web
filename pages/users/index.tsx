@@ -10,6 +10,7 @@ import { ConfirmContext } from "@definitions/confirm-context";
 import { UserRoles } from "@interfaces/user/user.interface";
 import { IFilterBase } from "@interfaces/index";
 import { paginationComponentOptions } from "utils/constants";
+import { debounce } from "utils/functions";
 
 const ListRole = [
   {
@@ -162,13 +163,13 @@ const Users: React.FC = () => {
     setQuery({ ...query, limit: newPerPage, page });
   };
 
-  const handleSearch = (e: any) => {
+  const handleSearch = debounce((e: any) => {
     const { value, name } = e.target;
     setQuery((prevValues: any) => ({
       ...prevValues,
       [name]: value,
     }));
-  };
+  }, 500);
 
   const renderBtnSaveInfo = () => {
     return (

@@ -11,6 +11,7 @@ import CustomModal from "@components/modal";
 import { useRouter } from "next/router";
 import routes from "constants/routes";
 import { paginationComponentOptions } from "utils/constants";
+import { debounce } from "utils/functions";
 
 const listType = [
   {
@@ -139,13 +140,13 @@ const Lessons: React.FC = () => {
     setQuery({ ...query, limit: newPerPage, page });
   };
 
-  const handleSearch = (e: any) => {
+  const handleSearch = debounce((e: any) => {
     const { value, name } = e.target;
     setQuery((prevValues: any) => ({
       ...prevValues,
       [name]: value,
     }));
-  };
+  }, 1000);
 
   const columns = [
     {

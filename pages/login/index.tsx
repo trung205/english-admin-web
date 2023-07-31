@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { IUserLogin } from "@interfaces/auth/auth.interface";
 import AuthService from "../../src/services/auth.service";
@@ -44,9 +44,10 @@ const Login: React.FC = () => {
         dispatch(loginSuccess(res));
         router.push(routes.private.users);
       } else {
-        alert('Thông tin đăng nhập không hợp lệ')
+        alert("Thông tin đăng nhập không hợp lệ");
       }
     } catch (error) {
+      alert("Email hoặc mật khẩu không đúng");
       console.log(error);
     }
   };

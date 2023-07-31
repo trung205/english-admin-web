@@ -7,7 +7,7 @@ import { ConfirmContext } from "@definitions/confirm-context";
 import { Button, Form } from "react-bootstrap";
 import CustomModal from "@components/modal";
 import { useRouter } from "next/router";
-import { cleanObject } from "utils/functions";
+import { cleanObject, debounce } from "utils/functions";
 import ImageUpload from "@components/image-upload";
 import {
   IGrammarFilter,
@@ -207,13 +207,13 @@ const Grammars: React.FC = () => {
     setQuery({ ...query, limit: newPerPage, page });
   };
 
-  const handleSearch = (e: any) => {
+  const handleSearch = debounce((e: any) => {
     const { value, name } = e.target;
     setQuery((prevValues: any) => ({
       ...prevValues,
       [name]: value,
     }));
-  };
+  }, 500);
 
   const columns = [
     {
