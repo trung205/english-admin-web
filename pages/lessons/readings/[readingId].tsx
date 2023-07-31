@@ -121,7 +121,6 @@ const Readings: React.FC = () => {
 
   const handleImageUpload = (url: any) => {
     setImageURL(url);
-    console.log(url, "handleImageUpload");
   };
 
   const handlePageChange = (page: any) => {

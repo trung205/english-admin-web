@@ -21,7 +21,7 @@ export const NavbarComponent: React.FC = ({ children }) => {
       <div className={styles.sidebar_header}>
         <Link href="/">
           <div className="text-white d-flex align-items-center justify-content-center">
-            <span className={`ms-1 fs-4 ${styles.text_brand}`}>#DNKHTA</span>
+            <span className={`ms-1 fs-4 ${styles.text_brand}`}>#English App</span>
           </div>
         </Link>
       </div>

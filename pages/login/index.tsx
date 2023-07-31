@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import Link from "next/link";
 import { IUserLogin } from "@interfaces/auth/auth.interface";
 import AuthService from "../../src/services/auth.service";
@@ -7,14 +7,25 @@ import { useAppDispatch } from "@redux/store";
 import { loginSuccess } from "../../src/redux/slices/auth";
 import routes from "constants/routes";
 import styles from "../../src/styles/login/Login.module.scss";
+import { UserRoles } from "@interfaces/user/user.interface";
+import { useSelector } from "react-redux";
+import { RootState } from "@redux/reducers";
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const user = useSelector((state: RootState) => state.auth);
+
   const [userState, setUserState] = useState<IUserLogin>({
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    if (user.isLoggedIn) {
+      router.push(routes.private.users);
+    }
+  }, [user]);
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,8 +40,12 @@ const Login: React.FC = () => {
     try {
       let bodyUserLogin = { ...userState };
       let res = await AuthService.login(bodyUserLogin);
-      dispatch(loginSuccess(res));
-      router.push(routes.private.users);
+      if (res.role === UserRoles.ADMIN) {
+        dispatch(loginSuccess(res));
+        router.push(routes.private.users);
+      } else {
+        alert('Thông tin đăng nhập không hợp lệ')
+      }
     } catch (error) {
       console.log(error);
     }
