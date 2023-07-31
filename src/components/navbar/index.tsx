@@ -44,7 +44,7 @@ export const NavbarComponent: React.FC = ({ children }) => {
       <div className={styles.sidebar_footer}>
         <div className={`${styles.sidebar_footer_item} d-flex align-items-center justify-content-center`} onClick={handleLogout}>
           <i className="bi bi-box-arrow-in-left h4"></i>
-          <span className="ms-1 fs-4 d-none d-md-inline">Logout</span>
+          <span className="ms-1 fs-4 d-none d-md-inline">Đăng xuất</span>
         </div>
       </div>
     </nav>

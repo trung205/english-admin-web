@@ -3,7 +3,6 @@ import styles from "../../../src/styles/listenings/Listenings.module.scss";
 import DataTable from "react-data-table-component";
 import Paper from "@mui/material/Paper";
 import SortIcon from "@mui/icons-material/ArrowDownward";
-import { ILessonFilter, LessonType } from "@interfaces/lesson/lesson.interface";
 import { ConfirmContext } from "@definitions/confirm-context";
 import { Button, Form } from "react-bootstrap";
 import CustomModal from "@components/modal";
@@ -15,19 +14,22 @@ import {
 } from "@interfaces/listening/listening.interface";
 import listeningService from "src/services/listening.service";
 import { cleanObject } from "utils/functions";
+import { paginationComponentOptions } from "utils/constants";
 
 const Listenings: React.FC = () => {
   const router = useRouter();
   const lessonId = router.query.listeningId as string;
   const [pending, setPending] = useState(true);
   const [query, setQuery] = useState<IListeningFilter>({
-    lesson: "",
+    lessonId: "",
+    limit: 10,
   });
   const [listenings, setListenings] = useState<any>([]);
   const [listeningInfo, setListeningInfo] = useState<any>();
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [listWord, setListWord] = useState<string[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
   const { handleShowConfirm }: any = useContext(ConfirmContext);
 
   const handleShowModal = () => {
@@ -39,15 +41,12 @@ const Listenings: React.FC = () => {
     setShowModal(false);
   };
 
-  //   const handleChangeType = (item: any) => {
-  //     setQuery({ ...query, type: item.type });
-  //   };
-
   const fetchDataListening = useCallback(async () => {
-    if (query.lesson) {
+    if (query.lessonId) {
       setPending(true);
       const listenings = await listeningService.getAll(query);
-      setListenings(listenings.data.data.data);
+      setListenings(listenings.data.data.items);
+      setTotalItems(listenings.data.data.totalItems);
       setPending(false);
     }
   }, [query]);
@@ -57,7 +56,7 @@ const Listenings: React.FC = () => {
   }, [fetchDataListening]);
 
   useEffect(() => {
-    setQuery({ ...query, lesson: lessonId });
+    setQuery({ ...query, lessonId });
   }, [router]);
 
   const handleDeleteBtn = (e: any, cell: any) => {
@@ -130,7 +129,7 @@ const Listenings: React.FC = () => {
       if (isEdit) {
         await listeningService.updateListening(listeningInfo._id, body);
       } else {
-        body = {...body, lesson: lessonId, type: ListeningType.SELECT_WORD}
+        body = { ...body, lessonId, type: ListeningType.SELECT_WORD };
         await listeningService.createListening(body);
       }
       fetchDataListening();
@@ -145,6 +144,22 @@ const Listenings: React.FC = () => {
     setListWord([]);
     setIsEdit(false);
     handleShowModal();
+  };
+
+  const handlePageChange = (page: any) => {
+    setQuery({ ...query, page });
+  };
+
+  const handlePerRowsChange = async (newPerPage: number, page: number) => {
+    setQuery({ ...query, limit: newPerPage, page });
+  };
+
+  const handleSearch = (e: any) => {
+    const { value, name } = e.target;
+    setQuery((prevValues: any) => ({
+      ...prevValues,
+      [name]: value,
+    }));
   };
 
   const columns = [
@@ -213,6 +228,8 @@ const Listenings: React.FC = () => {
               className="form-control"
               aria-label="Amount (to the nearest dollar)"
               placeholder="Tìm kiếm ..."
+              name="keyword"
+              onChange={handleSearch}
             />
             <div className="input-group-append">
               <i className="bi bi-filter h4"></i>
@@ -236,6 +253,11 @@ const Listenings: React.FC = () => {
           sortIcon={<SortIcon />}
           pagination
           progressPending={pending}
+          paginationServer
+          paginationComponentOptions={paginationComponentOptions}
+          paginationTotalRows={totalItems}
+          onChangePage={handlePageChange}
+          onChangeRowsPerPage={handlePerRowsChange}
         />
       </Paper>
       <CustomModal

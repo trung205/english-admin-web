@@ -33,7 +33,7 @@ export const Layout: React.FC = ({ children }) => {
               <div
                 className={`w-100 overflow-hidden vh-100 ${styles.layout_right}`}
               >
-                <Header />
+                {/* <Header /> */}
                 <main className={`w-100 overflow-auto ${styles.right_content}`}>
                   {children}
                 </main>

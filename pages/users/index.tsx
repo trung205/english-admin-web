@@ -7,13 +7,32 @@ import userService from "src/services/user.service";
 import CustomModal from "@components/modal";
 import { Button, Form } from "react-bootstrap";
 import { ConfirmContext } from "@definitions/confirm-context";
+import { UserRoles } from "@interfaces/user/user.interface";
+import { IFilterBase } from "@interfaces/index";
+import { paginationComponentOptions } from "utils/constants";
+
+const ListRole = [
+  {
+    name: "Người dùng",
+    role: UserRoles.USER,
+  },
+  {
+    name: "Người quản lý",
+    role: UserRoles.ADMIN,
+  },
+];
 
 const Users: React.FC = () => {
   let [users, setUsers] = useState<any>([]);
-  let [query, setQuery] = useState({});
+  const [query, setQuery] = useState<IFilterBase>({
+    limit: 10,
+  });
   const [pending, setPending] = useState(true);
-  const [userEdit, setUserEdit] = useState<any>();
+  const [userInfo, setUserInfo] = useState<any>();
   const [showModalEdit, setShowModalEdit] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [totalItems, setTotalItems] = useState(0);
+
   const { handleShowConfirm }: any = useContext(ConfirmContext);
 
   const columns = [
@@ -71,10 +90,11 @@ const Users: React.FC = () => {
 
   const fetchDataUsers = useCallback(async () => {
     setPending(true);
-    const dataUsers = await userService.getAllUser();
+    const dataUsers = await userService.getAllUser(query);
     setUsers(dataUsers.data.data.items);
+    setTotalItems(dataUsers.data.data.totalItems);
     setPending(false);
-  }, []);
+  }, [query]);
 
   useEffect(() => {
     fetchDataUsers().catch(console.error);
@@ -86,24 +106,35 @@ const Users: React.FC = () => {
     });
   };
 
-  const handleEditBtn = (e: any, cell: any) => {
-    setUserEdit(cell);
+  const handleCreateBtn = () => {
+    setIsEdit(false);
+    setUserInfo({});
     handleShowModal();
   };
 
-  const handleInputEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEditBtn = (e: any, cell: any) => {
+    setIsEdit(true);
+    setUserInfo(cell);
+    handleShowModal();
+  };
+
+  const handleInputInfo = (e: any) => {
     const { value, name } = e.target;
-    setUserEdit((prevValues: any) => ({
+    setUserInfo((prevValues: any) => ({
       ...prevValues,
       [name]: value,
     }));
   };
 
-  const handleSaveEdit = async () => {
+  const handleSaveInfo = async () => {
     try {
-      await userService.updateUser(userEdit._id, {
-        username: userEdit.username,
-      });
+      if (isEdit) {
+        await userService.updateUser(userInfo._id, {
+          username: userInfo.username,
+        });
+      } else {
+        await userService.createUser(userInfo);
+      }
       fetchDataUsers();
       handleCloseModal();
     } catch (error) {
@@ -123,15 +154,59 @@ const Users: React.FC = () => {
     }
   };
 
-  const renderBtnSaveEdit = () => {
+  const handlePageChange = (page: any) => {
+    setQuery({ ...query, page });
+  };
+
+  const handlePerRowsChange = async (newPerPage: number, page: number) => {
+    setQuery({ ...query, limit: newPerPage, page });
+  };
+
+  const handleSearch = (e: any) => {
+    const { value, name } = e.target;
+    setQuery((prevValues: any) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+  };
+
+  const renderBtnSaveInfo = () => {
     return (
-      <Button variant="primary" onClick={handleSaveEdit}>
+      <Button variant="primary" onClick={handleSaveInfo}>
         Lưu
       </Button>
     );
   };
   return (
     <div className="d-flex flex-column min-vh-100 mt-3">
+      <div className={styles.tab_bar}>
+        <div className={styles.header_tab_bar}>
+          <div className={`input-group mb-3 ${styles.search_group}`}>
+            <div className="input-group-prepend">
+              <i className="bi bi-search h5"></i>
+            </div>
+            <input
+              type="text"
+              className="form-control"
+              aria-label="Amount (to the nearest dollar)"
+              placeholder="Tìm kiếm ..."
+              name="keyword"
+              onChange={handleSearch}
+            />
+            <div className="input-group-append">
+              <i className="bi bi-filter h4"></i>
+            </div>
+          </div>
+          <div>
+            <button
+              className={`${styles.btn_create} btn`}
+              onClick={handleCreateBtn}
+            >
+              Thêm người dùng<i className="bi bi-plus-square-dotted"></i>
+            </button>
+          </div>
+        </div>
+      </div>
       <Paper className={styles.data_table}>
         <DataTable
           columns={columns}
@@ -139,14 +214,21 @@ const Users: React.FC = () => {
           defaultSortField="email"
           sortIcon={<SortIcon />}
           pagination
+          paginationServer
           progressPending={pending}
+          paginationComponentOptions={paginationComponentOptions}
+          paginationTotalRows={totalItems}
+          onChangePage={handlePageChange}
+          onChangeRowsPerPage={handlePerRowsChange}
         />
       </Paper>
       <CustomModal
         showModal={showModalEdit}
         onClose={handleCloseModal}
-        title="Chỉnh sửa thông tin người dùng"
-        footer={renderBtnSaveEdit()}
+        title={
+          isEdit ? "Chỉnh sửa thông tin người dùng" : "Thông tin người dùng"
+        }
+        footer={renderBtnSaveInfo()}
       >
         <Form>
           <Form.Group controlId="formName">
@@ -154,9 +236,9 @@ const Users: React.FC = () => {
             <Form.Control
               type="text"
               placeholder="Nhập tên người dùng"
-              defaultValue={userEdit?.username}
+              defaultValue={userInfo?.username}
               name="username"
-              onInput={handleInputEdit}
+              onInput={handleInputInfo}
               // Các xử lý sự kiện khi thay đổi tên người dùng
             />
           </Form.Group>
@@ -164,10 +246,43 @@ const Users: React.FC = () => {
             <Form.Label>Email</Form.Label>
             <Form.Control
               type="email"
+              name="email"
               placeholder="Email"
-              defaultValue={userEdit?.email}
-              disabled // Vô hiệu hóa trường email
+              defaultValue={userInfo?.email}
+              disabled={isEdit ? true : false} // Vô hiệu hóa trường email
+              onInput={handleInputInfo}
             />
+          </Form.Group>
+          {!isEdit && (
+            <Form.Group controlId="formEmail">
+              <Form.Label>Mật khẩu</Form.Label>
+              <Form.Control
+                type="password"
+                name="password"
+                placeholder="Mật khẩu"
+                defaultValue={userInfo?.password}
+                onInput={handleInputInfo}
+              />
+            </Form.Group>
+          )}
+
+          <Form.Group>
+            <Form.Label>Vai trò</Form.Label>
+            <select
+              className="form-control"
+              defaultValue={userInfo?.role}
+              onChange={handleInputInfo}
+              name="role"
+            >
+              <option>Vai trò</option>
+              {ListRole.map((item) => {
+                return (
+                  <option value={item.role} key={item.role}>
+                    {item.name}
+                  </option>
+                );
+              })}
+            </select>
           </Form.Group>
         </Form>
       </CustomModal>

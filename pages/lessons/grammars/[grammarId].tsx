@@ -3,17 +3,11 @@ import styles from "../../../src/styles/grammars/Grammars.module.scss";
 import DataTable from "react-data-table-component";
 import Paper from "@mui/material/Paper";
 import SortIcon from "@mui/icons-material/ArrowDownward";
-import { ILessonFilter, LessonType } from "@interfaces/lesson/lesson.interface";
 import { ConfirmContext } from "@definitions/confirm-context";
 import { Button, Form } from "react-bootstrap";
 import CustomModal from "@components/modal";
 import { useRouter } from "next/router";
 import { cleanObject } from "utils/functions";
-import {
-  IReadingFilter,
-  IReadingInfo,
-} from "@interfaces/reading/reading.interface";
-import readingService from "src/services/reading.service";
 import ImageUpload from "@components/image-upload";
 import {
   IGrammarFilter,
@@ -21,6 +15,7 @@ import {
   IGrammarUse,
 } from "@interfaces/grammar/grammar.interface";
 import grammarService from "src/services/grammar.service";
+import { paginationComponentOptions } from "utils/constants";
 
 const Grammars: React.FC = () => {
   const router = useRouter();
@@ -28,6 +23,7 @@ const Grammars: React.FC = () => {
   const [pending, setPending] = useState(true);
   const [query, setQuery] = useState<IGrammarFilter>({
     lessonId: "",
+    limit: 10,
   });
   const [grammars, setGrammars] = useState<any>([]);
   const [grammarInfo, setGrammarInfo] = useState<any>();
@@ -36,6 +32,7 @@ const Grammars: React.FC = () => {
   const [imageURL, setImageURL] = useState<string>();
   const [listKnow, setListKnow] = useState<string[]>([]);
   const [listUse, setListUse] = useState<any>([]);
+  const [totalItems, setTotalItems] = useState(0);
 
   const { handleShowConfirm }: any = useContext(ConfirmContext);
 
@@ -48,15 +45,12 @@ const Grammars: React.FC = () => {
     setShowModal(false);
   };
 
-  //   const handleChangeType = (item: any) => {
-  //     setQuery({ ...query, type: item.type });
-  //   };
-
   const fetchDataGrammar = useCallback(async () => {
     if (query.lessonId) {
       setPending(true);
       const grammars = await grammarService.getAll(query);
       setGrammars(grammars.data.data.items);
+      setTotalItems(grammars.data.data.totalItems);
       setPending(false);
     }
   }, [query]);
@@ -203,7 +197,22 @@ const Grammars: React.FC = () => {
 
   const handleImageUpload = (url: any) => {
     setImageURL(url);
-    console.log(url, "handleImageUpload");
+  };
+
+  const handlePageChange = (page: any) => {
+    setQuery({ ...query, page });
+  };
+
+  const handlePerRowsChange = async (newPerPage: number, page: number) => {
+    setQuery({ ...query, limit: newPerPage, page });
+  };
+
+  const handleSearch = (e: any) => {
+    const { value, name } = e.target;
+    setQuery((prevValues: any) => ({
+      ...prevValues,
+      [name]: value,
+    }));
   };
 
   const columns = [
@@ -268,6 +277,8 @@ const Grammars: React.FC = () => {
               className="form-control"
               aria-label="Amount (to the nearest dollar)"
               placeholder="Tìm kiếm ..."
+              name="keyword"
+              onChange={handleSearch}
             />
             <div className="input-group-append">
               <i className="bi bi-filter h4"></i>
@@ -291,6 +302,11 @@ const Grammars: React.FC = () => {
           sortIcon={<SortIcon />}
           pagination
           progressPending={pending}
+          paginationServer
+          paginationComponentOptions={paginationComponentOptions}
+          paginationTotalRows={totalItems}
+          onChangePage={handlePageChange}
+          onChangeRowsPerPage={handlePerRowsChange}
         />
       </Paper>
       <CustomModal

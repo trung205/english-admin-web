@@ -1,11 +1,11 @@
 import { IFilterBase } from "..";
 
 export interface IReadingFilter extends IFilterBase {
-  lesson: string;
+  lessonId: string;
 }
 
 export class IReadingInfo {
-  lesson?: string;
+  lessonId?: string;
   image?: string;
   pronunciation?: string;
   translateWord?: string;

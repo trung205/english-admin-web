@@ -91,9 +91,20 @@
     position: absolute;
     left: 0;
     top: 0;
+    z-index: 1;
 
     .sidebar_content li .item_nav span {
       display: inline !important;
+    }
+    .sidebar_header {
+      .text_brand {
+        font-size: large;
+      }
+    }
+  }
+  .sidebar_header {
+    .text_brand {
+      font-size: xx-small;
     }
   }
 }

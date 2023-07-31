@@ -73,7 +73,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload }) => {
         <label htmlFor="input-file">
           <i className="bi bi-cloud"></i>Select a file
         </label>
-        <input id="input-file" type="file" onChange={handleImageChange} />
+        <input id="input-file" type="file" accept="image/png, image/gif, image/jpeg" onChange={handleImageChange} />
         {image && (
           <div className={styles.file_block}>
             <div className={styles.file_info}>
@@ -95,7 +95,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload }) => {
       </div>
       {image && (
         <div className="d-flex justify-content-center align-items-center">
-          {/* <input type="file" onChange={handleImageChange} /> */}
           <div
             className={`${styles.button_wrapper} 
           ${uploadStatus !== UploadStatus.START ? styles.loading : ""}

@@ -10,6 +10,7 @@ import { Button, Form } from "react-bootstrap";
 import CustomModal from "@components/modal";
 import { useRouter } from "next/router";
 import routes from "constants/routes";
+import { paginationComponentOptions } from "utils/constants";
 
 const listType = [
   {
@@ -37,11 +38,13 @@ const Lessons: React.FC = () => {
   const [pending, setPending] = useState(true);
   const [query, setQuery] = useState<ILessonFilter>({
     type: LessonType.READING,
+    limit: 10,
   });
   const [lessons, setLessons] = useState<any>([]);
   const [lessonInfo, setLessonInfo] = useState<any>();
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [totalItems, setTotalItems] = useState(0);
   const { handleShowConfirm }: any = useContext(ConfirmContext);
 
   const handleShowModal = () => {
@@ -61,6 +64,7 @@ const Lessons: React.FC = () => {
     setPending(true);
     const lessons = await lessonService.getAll(query);
     setLessons(lessons.data.data.data);
+    setTotalItems(lessons.data.data.totalItems);
     setPending(false);
   }, [query]);
 
@@ -125,6 +129,22 @@ const Lessons: React.FC = () => {
 
   const handleRowClicked = (row: any, event: any) => {
     if (query.type) router.push(routesLesson[query.type](row._id));
+  };
+
+  const handlePageChange = (page: any) => {
+    setQuery({ ...query, page });
+  };
+
+  const handlePerRowsChange = async (newPerPage: number, page: number) => {
+    setQuery({ ...query, limit: newPerPage, page });
+  };
+
+  const handleSearch = (e: any) => {
+    const { value, name } = e.target;
+    setQuery((prevValues: any) => ({
+      ...prevValues,
+      [name]: value,
+    }));
   };
 
   const columns = [
@@ -193,6 +213,8 @@ const Lessons: React.FC = () => {
               className="form-control"
               aria-label="Amount (to the nearest dollar)"
               placeholder="Tìm kiếm ..."
+              name="keyword"
+              onChange={handleSearch}
             />
             <div className="input-group-append">
               <i className="bi bi-filter h4"></i>
@@ -236,6 +258,11 @@ const Lessons: React.FC = () => {
           onRowClicked={handleRowClicked}
           highlightOnHover
           pointerOnHover
+          paginationServer
+          paginationComponentOptions={paginationComponentOptions}
+          paginationTotalRows={totalItems}
+          onChangePage={handlePageChange}
+          onChangeRowsPerPage={handlePerRowsChange}
         />
       </Paper>
       <CustomModal

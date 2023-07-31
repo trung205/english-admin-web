@@ -7,12 +7,12 @@ export enum ListeningType {
 
 export interface IListeningFilter extends IFilterBase {
   type?: ListeningType;
-  lesson: string;
+  lessonId: string;
 }
 
 export class IListeningInfo {
   type?: ListeningType;
-  lesson?: string;
+  lessonId?: string;
   answer?: string;
   question?: string;
   words?: Array<string>;

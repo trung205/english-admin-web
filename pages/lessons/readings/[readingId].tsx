@@ -3,7 +3,6 @@ import styles from "../../../src/styles/readings/Readings.module.scss";
 import DataTable from "react-data-table-component";
 import Paper from "@mui/material/Paper";
 import SortIcon from "@mui/icons-material/ArrowDownward";
-import { ILessonFilter, LessonType } from "@interfaces/lesson/lesson.interface";
 import { ConfirmContext } from "@definitions/confirm-context";
 import { Button, Form } from "react-bootstrap";
 import CustomModal from "@components/modal";
@@ -15,19 +14,23 @@ import {
 } from "@interfaces/reading/reading.interface";
 import readingService from "src/services/reading.service";
 import ImageUpload from "@components/image-upload";
+import { paginationComponentOptions } from "utils/constants";
 
 const Readings: React.FC = () => {
   const router = useRouter();
   const lessonId = router.query.readingId as string;
   const [pending, setPending] = useState(true);
   const [query, setQuery] = useState<IReadingFilter>({
-    lesson: "",
+    lessonId: "",
+    limit: 10,
   });
   const [readings, setReadings] = useState<any>([]);
   const [readingInfo, setReadingInfo] = useState<any>();
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [imageURL, setImageURL] = useState<string>();
+  const [totalItems, setTotalItems] = useState(0);
+
   const { handleShowConfirm }: any = useContext(ConfirmContext);
 
   const handleShowModal = () => {
@@ -39,15 +42,13 @@ const Readings: React.FC = () => {
     setShowModal(false);
   };
 
-  //   const handleChangeType = (item: any) => {
-  //     setQuery({ ...query, type: item.type });
-  //   };
-
   const fetchDataReading = useCallback(async () => {
-    if (query.lesson) {
+    if (query.lessonId) {
       setPending(true);
       const readings = await readingService.getAll(query);
-      setReadings(readings.data.data.data);
+      setReadings(readings.data.data.items);
+      setTotalItems(readings.data.data.totalItems);
+
       setPending(false);
     }
   }, [query]);
@@ -57,7 +58,7 @@ const Readings: React.FC = () => {
   }, [fetchDataReading]);
 
   useEffect(() => {
-    setQuery({ ...query, lesson: lessonId });
+    setQuery({ ...query, lessonId });
   }, [router]);
 
   const handleDeleteBtn = (e: any, cell: any) => {
@@ -92,8 +93,6 @@ const Readings: React.FC = () => {
     }));
   };
 
-
-
   const handleSaveReading = async () => {
     try {
       const cleanedObject = cleanObject<IReadingInfo>(
@@ -104,7 +103,7 @@ const Readings: React.FC = () => {
       if (isEdit) {
         await readingService.updateReading(readingInfo._id, body);
       } else {
-        body = { ...body, lesson: lessonId };
+        body = { ...body, lessonId };
         await readingService.createReading(body);
       }
       fetchDataReading();
@@ -123,6 +122,22 @@ const Readings: React.FC = () => {
   const handleImageUpload = (url: any) => {
     setImageURL(url);
     console.log(url, "handleImageUpload");
+  };
+
+  const handlePageChange = (page: any) => {
+    setQuery({ ...query, page });
+  };
+
+  const handlePerRowsChange = async (newPerPage: number, page: number) => {
+    setQuery({ ...query, limit: newPerPage, page });
+  };
+
+  const handleSearch = (e: any) => {
+    const { value, name } = e.target;
+    setQuery((prevValues: any) => ({
+      ...prevValues,
+      [name]: value,
+    }));
   };
 
   const columns = [
@@ -196,6 +211,8 @@ const Readings: React.FC = () => {
               className="form-control"
               aria-label="Amount (to the nearest dollar)"
               placeholder="Tìm kiếm ..."
+              name="keyword"
+              onChange={handleSearch}
             />
             <div className="input-group-append">
               <i className="bi bi-filter h4"></i>
@@ -219,6 +236,11 @@ const Readings: React.FC = () => {
           sortIcon={<SortIcon />}
           pagination
           progressPending={pending}
+          paginationServer
+          paginationComponentOptions={paginationComponentOptions}
+          paginationTotalRows={totalItems}
+          onChangePage={handlePageChange}
+          onChangeRowsPerPage={handlePerRowsChange}
         />
       </Paper>
       <CustomModal
@@ -258,7 +280,7 @@ const Readings: React.FC = () => {
               onInput={handleInputInfo}
             />
           </Form.Group>
-          
+
           <Form.Group>
             <Form.Label>Hình ảnh</Form.Label>
             <ImageUpload onImageUpload={handleImageUpload} />
