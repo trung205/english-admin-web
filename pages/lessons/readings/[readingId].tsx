@@ -82,6 +82,7 @@ const Readings: React.FC = () => {
   const handleEditBtn = (e: any, cell: any) => {
     setIsEdit(true);
     setReadingInfo(cell);
+    setImageURL(cell.image);
     handleShowModal();
   };
 
@@ -283,6 +284,11 @@ const Readings: React.FC = () => {
           <Form.Group>
             <Form.Label>Hình ảnh</Form.Label>
             <ImageUpload onImageUpload={handleImageUpload} />
+            {imageURL && (
+              <div>
+                <img src={imageURL} alt="Selected" className="w-25"/>
+              </div>
+            )}
           </Form.Group>
         </Form>
       </CustomModal>

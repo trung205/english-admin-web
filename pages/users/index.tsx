@@ -5,7 +5,7 @@ import SortIcon from "@mui/icons-material/ArrowDownward";
 import styles from "../../src/styles/users/Users.module.scss";
 import userService from "src/services/user.service";
 import CustomModal from "@components/modal";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Modal, Table } from "react-bootstrap";
 import { ConfirmContext } from "@definitions/confirm-context";
 import { UserRoles } from "@interfaces/user/user.interface";
 import { IFilterBase } from "@interfaces/index";
@@ -23,6 +23,15 @@ const ListRole = [
   },
 ];
 
+const typeActivity = {
+  GRAMMAR: "Học bài ngữ pháp",
+  LISTENING: "Học bài nghe",
+  READING: "Học bài đọc",
+  LOGIN: "Đăng nhập vào ứng dụng",
+  LOGOUT: "Đăng xuất khỏi ứng dụng",
+  EXAM: "EXAM",
+};
+
 const Users: React.FC = () => {
   let [users, setUsers] = useState<any>([]);
   const [query, setQuery] = useState<IFilterBase>({
@@ -33,6 +42,8 @@ const Users: React.FC = () => {
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [totalItems, setTotalItems] = useState(0);
+  const [showModalInfo, setShowModalInfo] = useState(false);
+  const [userActivity, setUserActivity] = useState<any>([]);
 
   const { handleShowConfirm }: any = useContext(ConfirmContext);
 
@@ -80,6 +91,22 @@ const Users: React.FC = () => {
       },
     },
   ];
+  const columnsActivity = [
+    // {
+    //   name: "#",
+    //   selector: (row: any, index: any) => index + 1,
+    // },
+    {
+      name: "Thời gian",
+      selector: "time",
+      sortable: true,
+    },
+    {
+      name: "Hoạt động",
+      selector: "activity",
+      sortable: true,
+    },
+  ];
 
   const handleShowModal = () => {
     setShowModalEdit(true);
@@ -87,6 +114,14 @@ const Users: React.FC = () => {
 
   const handleCloseModal = () => {
     setShowModalEdit(false);
+  };
+
+  const openModalInfo = () => {
+    setShowModalInfo(true);
+  };
+
+  const closeModalInfo = () => {
+    setShowModalInfo(false);
   };
 
   const fetchDataUsers = useCallback(async () => {
@@ -178,6 +213,37 @@ const Users: React.FC = () => {
       </Button>
     );
   };
+  const handleRowClicked = (row: any, event: any) => {
+    let newUserActivity: { activity: string; time: any }[] = [];
+
+    setUserInfo(row);
+    if (row.userHistories[0]) {
+      row.userHistories.forEach((item: any) => {
+        item.values.forEach((o: any) => {
+          newUserActivity.push({
+            activity: typeActivity[item.type as keyof typeof typeActivity],
+            time: o,
+          });
+        });
+      });
+    }
+    var currentTimeUTC = new Date();
+    const offsetVietnam = 7;
+    const currentTimeVietnam = new Date(
+      currentTimeUTC.getTime() + offsetVietnam * 60 * 60 * 1000
+    ).getTime();
+
+    newUserActivity.sort((a, b) => {
+      const timeA = new Date(a.time).getTime();
+      const timeB = new Date(b.time).getTime();
+      const timeDifferenceA = Math.abs(currentTimeVietnam - timeA);
+      const timeDifferenceB = Math.abs(currentTimeVietnam - timeB);
+      return timeDifferenceA - timeDifferenceB;
+    });
+    setUserActivity(newUserActivity);
+    console.log(userActivity);
+    openModalInfo();
+  };
   return (
     <div className="d-flex flex-column min-vh-100 mt-3">
       <div className={styles.tab_bar}>
@@ -221,6 +287,9 @@ const Users: React.FC = () => {
           paginationTotalRows={totalItems}
           onChangePage={handlePageChange}
           onChangeRowsPerPage={handlePerRowsChange}
+          onRowClicked={handleRowClicked}
+          highlightOnHover
+          pointerOnHover
         />
       </Paper>
       <CustomModal
@@ -287,6 +356,40 @@ const Users: React.FC = () => {
           </Form.Group>
         </Form>
       </CustomModal>
+      <Modal show={showModalInfo} onHide={closeModalInfo}>
+        <Modal.Header closeButton>
+          <Modal.Title>Thông tin người dùng</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            <strong>Tên:</strong> {userInfo?.username}
+          </p>
+          <p>
+            <strong>Email:</strong> {userInfo?.email}
+          </p>
+          <h3>Lịch sử hoạt động</h3>
+          <Paper className={styles.data_table}>
+            <DataTable
+              columns={columnsActivity}
+              data={userActivity}
+              defaultSortField="time"
+              sortIcon={<SortIcon />}
+              pagination
+              progressPending={pending}
+              paginationComponentOptions={{...paginationComponentOptions,  noRowsPerPage: true}}
+              paginationTotalRows={userActivity.length}
+              highlightOnHover
+              pointerOnHover
+              paginationPerPage={5}
+            />
+          </Paper>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeModalInfo}>
+            Đóng
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

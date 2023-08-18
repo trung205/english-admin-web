@@ -147,6 +147,10 @@
   display: flex;
   align-items: center;
   font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 75%;
 }
 .file_icon {
   margin-right: 10px;

@@ -80,6 +80,7 @@ const Listenings: React.FC = () => {
   const handleEditBtn = (e: any, cell: any) => {
     setIsEdit(true);
     setListeningInfo(cell);
+    setListWord(cell.words)
     handleShowModal();
   };
 

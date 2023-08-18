@@ -11,16 +11,29 @@ export function cleanObject<T>(obj: T, interfaceRef: T): T {
   return obj;
 }
 
-export function debounce (fn: any, time: any) {
-  let timeoutId: any
-  return wrapper
-  function wrapper (...args: any) {
+export function debounce(fn: any, time: any) {
+  let timeoutId: any;
+  return wrapper;
+  function wrapper(...args: any) {
     if (timeoutId) {
-      clearTimeout(timeoutId)
+      clearTimeout(timeoutId);
     }
     timeoutId = setTimeout(() => {
-      timeoutId = null
-      fn(...args)
-    }, time)
+      timeoutId = null;
+      fn(...args);
+    }, time);
   }
+}
+
+export function getCurrentFormattedTime() {
+  var currentTimeUTC = new Date();
+  const offsetVietnam = 7; // Đây là offset theo UTC+7 (múi giờ Việt Nam)
+  const currentTimeVietnam = new Date(
+    currentTimeUTC.getTime() + offsetVietnam * 60 * 60 * 1000
+  );
+  var formattedTime = currentTimeVietnam
+    .toISOString()
+    .replace("T", " ")
+    .substr(0, 19);
+  return formattedTime;
 }

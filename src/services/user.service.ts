@@ -19,5 +19,8 @@ const removeUser = async (id: string) => {
   const response = await deleteRequest(`user/${id}`);
   return response;
 }
-
-export default { getAllUser, updateUser, removeUser, createUser };
+const createUserHistory = async (body: any) => {
+  const response = await postRequest("user-history", body);
+  return response;
+};
+export default { getAllUser, updateUser, removeUser, createUser, createUserHistory};

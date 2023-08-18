@@ -76,11 +76,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageUpload }) => {
         <input id="input-file" type="file" accept="image/png, image/gif, image/jpeg" onChange={handleImageChange} />
         {image && (
           <div className={styles.file_block}>
-            <div className={styles.file_info}>
               {" "}
               <i
                 className={`bi bi-file-earmark-post-fill ${styles.file_icon}`}
               ></i>{" "}
+            <div className={styles.file_info}>
               <span className={styles.file_name}>{image?.name}</span> |{" "}
               <span className={styles.file_size}>
                 {Math.floor((image?.size as number) / 1024)}KB
